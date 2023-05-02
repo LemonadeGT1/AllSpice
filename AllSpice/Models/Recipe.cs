@@ -12,3 +12,8 @@ public class Recipe
   public Account Creator { get; set; }
 
 }
+
+public class MyFavoriteRecipe : Recipe
+{
+  public int FavoriteId { get; set; }
+}

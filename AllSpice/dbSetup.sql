@@ -125,3 +125,10 @@ FROM recipes r
     JOIN accounts creator ON r.creatorId = creator.id;
 
 -- WHERE r.id = LAST_INSERT_ID();
+
+SELECT r.*, a.*, f.*
+FROM recipes r
+    JOIN favorites f ON r.id = f.recipeId
+    JOIN accounts a ON r.creatorId = a.id
+WHERE
+    f.accountId = "642cae5df1fcddc1a6a32924";
