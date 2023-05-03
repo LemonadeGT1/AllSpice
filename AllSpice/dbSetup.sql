@@ -44,7 +44,8 @@ CREATE TABLE
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Time Created',
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last Update',
         FOREIGN KEY (accountId) REFERENCES accounts(id) ON DELETE CASCADE,
-        FOREIGN KEY (recipeId) REFERENCES recipes(id) ON DELETE CASCADE
+        FOREIGN KEY (recipeId) REFERENCES recipes(id) ON DELETE CASCADE,
+        UNIQUE (accountId, recipeId)
     ) DEFAULT CHARSET utf8mb4;
 
 INSERT INTO
@@ -132,3 +133,26 @@ FROM recipes r
     JOIN accounts a ON r.creatorId = a.id
 WHERE
     f.accountId = "642cae5df1fcddc1a6a32924";
+
+-- Select all include favorite
+
+SELECT r.*, a.*, a2.*
+FROM recipes r
+    JOIN accounts a ON r.creatorId = a.id
+    LEFT JOIN favorites f ON f.recipeId = r.Id
+    LEFT JOIN accounts a2 ON f.accountId = a2.id
+ORDER BY
+    r.id -- WHERE
+    --     a2.id = "642cae5df1fcddc1a6a32924"
+;
+
+INSERT INTO
+    favorites (`accountId`, `recipeId`)
+VALUES (
+        '642cae5df1fcddc1a6a32924',
+        43
+    );
+
+DELETE FROM favorites WHERE id = 14;
+
+ALTER Table favorites ADD CONSTRAINT UNIQUE(accountId, recipeId);
