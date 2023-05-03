@@ -13,11 +13,11 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav me-auto">
-              <li>
+              <!-- <li>
                 <router-link :to="{ name: 'About' }" class="btn text-secondary selectable text-uppercase">
                   About
                 </router-link>
-              </li>
+              </li> -->
             </ul>
             <!-- LOGIN COMPONENT HERE -->
             <Login />
