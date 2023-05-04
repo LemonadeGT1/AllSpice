@@ -1,45 +1,54 @@
 <template>
   <div class="container">
     <div class="row mb-2">
+      <!-- TAG LINE -->
       <div class="col-md-4 my-2 order-md-0 order-1">
         <span class="text-small text-secondary">Cook up something special with our
           recipes.</span>
       </div>
+      <!-- FILTERS -->
       <div
         class="col-md-4 text-center order-md-1 order-0 text-small text-secondary elevation-3 bg-light rounded pb-1 mb-0 pt-1">
 
         <div class="row">
-          <div class="col-4"><span class="selectable rounded px-2 pb-1">All Recipes</span></div>
-          <div class="col-4"><span class="selectable rounded px-2 pb-1">My Recipes</span></div>
-          <div class="col-4"><span class="selectable rounded px-2 pb-1">Favorites</span></div>
+          <div class="col-4"><span class="selectable rounded px-2 pb-1" @click="getAllRecipes()">All Recipes</span></div>
+          <div class="col-4"><span class="selectable rounded px-2 pb-1" @click="getAllMyRecipes()">My Recipes</span></div>
+          <div class="col-4"><span class="selectable rounded px-2 pb-1" @click="getAllMyFavorites()">Favorites</span>
+          </div>
         </div>
 
       </div>
 
+      <!-- TAG LINE 2 -->
       <div class="col-md-4 my-2 order-md-3 order-3 text-end">
         <span class="text-small text-secondary">...or just do take-out.</span>
       </div>
     </div>
 
-    <!-- SECTION - Recipe Card -->
+    <!-- SECTION - START Recipe Card -->
     <div class="row">
       <div class="col-12 col-md-6 col-lg-4 col-xl-3 my-2" v-for="r in recipes" :key="r.id">
         <div class="imgContainer pt-1 elevation-3" :style="{ 'background-image': 'url(' + r.img + ')' }">
 
+          <!-- CATEGORY -->
           <div class="row justify-content-between">
             <div class="col-9">
               <div class="recipeGlass text-center m-2">
                 <h6 class="text-dark">{{ r.category }}</h6>
               </div>
             </div>
+
+            <!-- FAVORITE -->
             <div class="col-3">
               <div class="recipeGlass text-center m-2 selectable" @click="changeFavorite(r.id)">
-                <i v-if="r.id == favorites.find(f => f.id == r.id)?.id" class="mdi mdi-heart text-danger"></i>
-                <i v-else class="mdi mdi-heart-outline"></i>
+                <h6><i v-if="r.id == favorites.find(f => f.id == r.id)?.id" class="mdi mdi-heart text-danger"></i>
+                  <i v-else class="mdi mdi-heart-outline"></i>
+                </h6>
               </div>
             </div>
           </div>
 
+          <!-- TITLE -->
           <div class="row setHeight">
             <div class="col-12 titleContainer">
               <div :class="r.creatorId != account.id ? 'recipeGlass m-2 px-3' : 'myRecipeGlass m-2 px-3'">
@@ -52,6 +61,7 @@
         </div>
       </div>
     </div>
+    <!-- SECTION - END Recipe Card -->
 
   </div>
 </template>
@@ -60,6 +70,7 @@
 import { computed, onMounted } from "vue";
 import Pop from "../utils/Pop.js";
 import { recipesService } from "../services/RecipesService.js";
+import { favoritesService } from "../services/FavoritesService.js";
 import { AppState } from "../AppState.js";
 import { logger } from "../utils/Logger.js";
 import { accountService } from "../services/AccountService.js";
@@ -91,6 +102,30 @@ export default {
 
       changeFavorite(recipeId) {
         logger.log("changing favorite " + recipeId)
+        if (recipeId == AppState.favorites.find(f => f.id == recipeId)?.id) {
+          let favoriteId = AppState.favorites.find(f => f.id == recipeId)?.favoriteId
+          logger.log("Delete Favorite.", favoriteId)
+          favoritesService.deleteFavorite(favoriteId)
+        } else {
+          logger.log("Add Favorite", recipeId)
+          favoritesService.createFavorite(recipeId)
+        }
+        getRecipes() // FIXME I feel like I shouldn't have to do this.
+      },
+
+      getAllRecipes() {
+        getRecipes()
+      },
+
+      getAllMyRecipes() {
+        logger.log("getAllMyRecipes")
+      },
+
+      getAllMyFavorites() {
+        logger.log("getAllMyFavorites")
+        AppState.recipes.length = 0
+        AppState.favorites.forEach(f => AppState.recipes.push(f))
+        logger.log(AppState.recipes)
       }
     };
   },
