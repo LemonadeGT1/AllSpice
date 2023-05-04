@@ -34,7 +34,8 @@
             </div>
             <div class="col-3">
               <div class="recipeGlass text-center m-2 selectable" @click="changeFavorite(r.id)">
-                <span class="mdi mdi-heart-outline"></span>
+                <i v-if="r.id == favorites.find(f => f.id == r.id)?.id" class="mdi mdi-heart text-danger"></i>
+                <i v-else class="mdi mdi-heart-outline"></i>
               </div>
             </div>
           </div>
@@ -61,6 +62,7 @@ import Pop from "../utils/Pop.js";
 import { recipesService } from "../services/RecipesService.js";
 import { AppState } from "../AppState.js";
 import { logger } from "../utils/Logger.js";
+import { accountService } from "../services/AccountService.js";
 
 export default {
   setup() {
@@ -70,6 +72,14 @@ export default {
     async function getRecipes() {
       try {
         await recipesService.getRecipes()
+        await getMyFavorites()
+      } catch (error) {
+        Pop.error(error)
+      }
+    }
+    async function getMyFavorites() {
+      try {
+        await accountService.getMyFavorites()
       } catch (error) {
         Pop.error(error)
       }
@@ -77,6 +87,7 @@ export default {
     return {
       recipes: computed(() => AppState.recipes),
       account: computed(() => AppState.account),
+      favorites: computed(() => AppState.favorites),
 
       changeFavorite(recipeId) {
         logger.log("changing favorite " + recipeId)
