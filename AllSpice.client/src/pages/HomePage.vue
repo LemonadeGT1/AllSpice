@@ -101,16 +101,16 @@ export default {
       favorites: computed(() => AppState.favorites),
 
       changeFavorite(recipeId) {
-        logger.log("changing favorite " + recipeId)
+        // logger.log("changing favorite " + recipeId)
         if (recipeId == AppState.favorites.find(f => f.id == recipeId)?.id) {
           let favoriteId = AppState.favorites.find(f => f.id == recipeId)?.favoriteId
-          logger.log("Delete Favorite.", favoriteId)
+          // logger.log("Delete Favorite.", favoriteId)
           favoritesService.deleteFavorite(favoriteId)
         } else {
-          logger.log("Add Favorite", recipeId)
+          // logger.log("Add Favorite", recipeId)
           favoritesService.createFavorite(recipeId)
         }
-        getRecipes() // FIXME I feel like I shouldn't have to do this.
+        getRecipes() // FIXME I definitely shouldn't have to do this.
       },
 
       getAllRecipes() {
@@ -118,14 +118,32 @@ export default {
       },
 
       getAllMyRecipes() {
-        logger.log("getAllMyRecipes")
+        logger.log("getAllMyRecipes", AppState.recipes.length, AppState.myRecipes.length)
+        AppState.myRecipes.length = 0
+        getRecipes()
+        AppState.recipes.forEach(r => {
+          if (r.creatorId == AppState.account.id) {
+            logger.log("myRecipe", r.id)
+            AppState.myRecipes.push(r)
+          }
+        })
+        logger.log("myRecipes ", AppState.myRecipes)
+        AppState.recipes.length = 0
+        AppState.myRecipes.forEach(m => AppState.recipes.push(m))
+        // AppState.recipes.forEach((r) => {
+        //   logger.log(r.creatorId, ' Creator - Account ', AppState.account.id, ' Recipe ', r)
+        //   if (r.creatorId == AppState.account.id) {
+        //     logger.log("New myRecipe found: ", r)
+        //     AppState.myRecipes.push(r)
+        //   } else logger.log('no match', r)
+        //   AppState.recipes.length = 0
+        //   AppState.myRecipes.forEach(m => AppState.recipes.push(m))
+        // })
       },
 
       getAllMyFavorites() {
-        logger.log("getAllMyFavorites")
         AppState.recipes.length = 0
         AppState.favorites.forEach(f => AppState.recipes.push(f))
-        logger.log(AppState.recipes)
       }
     };
   },

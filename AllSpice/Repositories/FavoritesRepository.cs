@@ -36,6 +36,7 @@ public class FavoritesRepository
     JOIN favorites f ON r.id = f.recipeId
     JOIN accounts a ON r.creatorId = a.id
     WHERE f.accountId = @userId
+    ORDER BY r.id
     ;";
 
     List<MyFavoriteRecipe> recipes = _db.Query<MyFavoriteRecipe, Account, Favorite, MyFavoriteRecipe>(sql, (r, a, f) =>
